@@ -31,7 +31,7 @@ for runCount = 1:10
     miu = 0.01; %learning rate
 
     tic
-    for epoch = 1:2000
+    for epoch = 1:3000
 
         in_batch = in(startIndex:endIndex,:);
         targ_batch = targ(startIndex:endIndex,:);
@@ -57,6 +57,7 @@ for runCount = 1:10
             startIndex = endIndex;
             endIndex = min(trainSize,endIndex + batchSize);
         else
+            miu = miu / 1.5;
             startIndex = 1;
             endIndex = startIndex + batchSize;
         end
