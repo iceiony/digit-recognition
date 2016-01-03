@@ -66,23 +66,16 @@ toc
 plot(1:length(errors),errors);
 disp(fprintf('Final error:%d', errors(end)));
 
+%test performance against test set
 test = load('optdigits.tes');
 out = softmax(test(:,1:end-1),w);
 expected = test(:,end);
 
-result = mod(find(round(out)==1),10);
 correct = 0;
-missed = zeros(0,10);
 for i = 1:length(expected)
     %remove one since index starts with 1
-    result = find(round(out(i,:))==1) - 1; 
-    if isempty(result)
-        result = find(out(i,:) == max(out(i,:))) - 1;
-        correct = correct + ( result == expected(i));
-        disp(fprintf('Prediction uncertain %d == %d ', result , expected(i) ));
-    else
-        correct = correct + ( result == expected(i));
-    end
+    result = find(out(i,:) == max(out(i,:))) - 1;
+    correct = correct + ( result == expected(i));
 end
 
 disp(fprintf('Prediction success: %0.2f%%',correct/length(test) * 100));
