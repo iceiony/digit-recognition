@@ -1,9 +1,15 @@
 clear all;
 close all;
 
-%load training data 
+%load training data and pre process it for training
 data = load('optdigits.tra');
 in = data(:,1:end-1);
+in = preprocess(in);
+
+%load test data and preprocess it for later testing
+test = load('optdigits.tes');
+testIn = preprocess(test(:,1:end-1));
+testTarg = test(:,end);
 
 %because this is a classification transform targ into a binary output
 targ = zeros(0,10);
@@ -17,9 +23,14 @@ outSize = size(targ,2);
 trainSize = size(targ,1);
 
 networkPerformance = zeros(10,1);
+% 
+% mistakes = zeros(0,64);
+% mistakeIndex = [];
 
 for runCount = 1:10
-    batchSize = 20;
+    
+    miu = 0.1; %learning rate
+    batchSize = 30;
     startIndex = 1 ;
     endIndex =  startIndex + batchSize;
 
@@ -28,21 +39,20 @@ for runCount = 1:10
     entropy_cost = @(targ,out) -sum(sum(targ .* log(out)));
 %     errors = []; %error cost function for plotting 
 
-    miu = 0.01; %learning rate
 
     tic
-    for epoch = 1:3000
+    for epoch = 1:5000
 
         in_batch = in(startIndex:endIndex,:);
         targ_batch = targ(startIndex:endIndex,:);
 
-        out = softmax(in_batch,w);
+        testOut = softmax(in_batch,w);
 
         % display entropy cost to test gradient is working
 %         cost = entropy_cost(targ_batch,out);
 %         errors(end+1)= cost;
 
-        dif = targ_batch - out ;
+        dif = targ_batch - testOut ;
 
         w_d = zeros(inSize,outSize);
         for i=1:endIndex-startIndex
@@ -57,7 +67,7 @@ for runCount = 1:10
             startIndex = endIndex;
             endIndex = min(trainSize,endIndex + batchSize);
         else
-            miu = miu / 1.5;
+            miu = miu / 1.1;
             startIndex = 1;
             endIndex = startIndex + batchSize;
         end
@@ -68,16 +78,18 @@ for runCount = 1:10
 %     plot(1:length(errors),errors);
 %     disp(fprintf('Final error:%d', errors(end)));
 
-    %test performance against test set
-    test = load('optdigits.tes');
-    out = softmax(test(:,1:end-1),w);
-    expected = test(:,end);
+    %test performance of network
+    testOut = softmax(testIn,w);
 
     correct = 0;
-    for i = 1:length(expected)
+    for i = 1:length(testTarg)
         %remove one since index starts with 1
-        result = find(out(i,:) == max(out(i,:))) - 1;
-        correct = correct + ( result == expected(i));
+        result = find(testOut(i,:) == max(testOut(i,:))) - 1;
+        correct = correct + ( result == testTarg(i));
+%         if result ~= testTarg(i)
+%             mistakes(end+1,:) = testIn(i,1:64);
+%             mistakeIndex(end+1) = i;
+%         end
     end
 
     networkPerformance(runCount) = correct/length(test) * 100;
@@ -86,3 +98,5 @@ for runCount = 1:10
     
     
 end
+
+disp(fprintf('Mean Performance: %0.2f%%\nVariance : %0.4f',mean(networkPerformance),var(networkPerformance)));
