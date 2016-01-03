@@ -32,7 +32,7 @@ for runCount = 1:10
     startIndex = 1 ;
     endIndex =  startIndex + batchSize;
 
-    w = rand(inSize,outSize); %initialise the weight matrix for single layer
+    w = rand(inSize,outSize)-0.5; %initialise the weight matrix for single layer
     
     entropy_cost = @(targ,out) -sum(sum(targ .* log(out)));
 %     errors = []; %error cost function for plotting 
@@ -43,13 +43,13 @@ for runCount = 1:10
         in_batch = in(startIndex:endIndex,:);
         targ_batch = targ(startIndex:endIndex,:);
 
-        testOut = softmax(in_batch,w);
+        out = softmax(in_batch,w);
 
         % display entropy cost to test gradient is working
 %         cost = entropy_cost(targ_batch,out);
 %         errors(end+1)= cost;
 
-        dif = targ_batch - testOut ;
+        dif = targ_batch - out ;
 
         w_d = zeros(inSize,outSize);
         for i=1:endIndex-startIndex
