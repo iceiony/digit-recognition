@@ -23,10 +23,8 @@ outSize = size(targ,2);
 trainSize = size(targ,1);
 
 networkPerformance = zeros(10,1);
-% 
-% mistakes = zeros(0,64);
-% mistakeIndex = [];
 
+%run multiple for optimisation success average
 for runCount = 1:10
     
     miu = 0.1; %learning rate
@@ -38,7 +36,6 @@ for runCount = 1:10
     
     entropy_cost = @(targ,out) -sum(sum(targ .* log(out)));
 %     errors = []; %error cost function for plotting 
-
 
     tic
     for epoch = 1:5000
@@ -62,7 +59,7 @@ for runCount = 1:10
         %update weights
         w = w + miu * w_d;
 
-        %update batch indexs
+        %update batch indexes
         if endIndex ~= trainSize
             startIndex = endIndex;
             endIndex = min(trainSize,endIndex + batchSize);
@@ -83,13 +80,9 @@ for runCount = 1:10
 
     correct = 0;
     for i = 1:length(testTarg)
-        %remove one since index starts with 1
+        %remove 1 since index starts at 1
         result = find(testOut(i,:) == max(testOut(i,:))) - 1;
         correct = correct + ( result == testTarg(i));
-%         if result ~= testTarg(i)
-%             mistakes(end+1,:) = testIn(i,1:64);
-%             mistakeIndex(end+1) = i;
-%         end
     end
 
     networkPerformance(runCount) = correct/length(test) * 100;
