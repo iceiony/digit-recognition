@@ -27,10 +27,9 @@ networkPerformance = zeros(10,1);
 %run multiple for optimisation success average
 for runCount = 1:10
     
+    regularisation = 0.001;
     miu = [0.1 0.1]; %learning rate
-    batchSize = 30;
-    startIndex = 1 ;
-    endIndex =  startIndex + batchSize;
+    batchSize = 18;
     hiddenSize = 90;
     
     w = {}; w_d={}; 
@@ -38,11 +37,14 @@ for runCount = 1:10
     w{2} = rand(hiddenSize,outSize)- 0.5; %initialise the weight matrix for single layer
     out = {}; testOut = {};
     
+    startIndex = 1 ;
+    endIndex =  startIndex + batchSize;
+    
 %     entropy_cost = @(targ,out) -sum(sum(targ .* log(out)));
 %     errors = []; %error cost function for plotting 
 
     tic
-    for epoch = 1:5000
+    for epoch = 1:6000
 
         in_batch = in(startIndex:endIndex,:);
         targ_batch = targ(startIndex:endIndex,:);
@@ -64,17 +66,19 @@ for runCount = 1:10
             w_d{1} = w_d{1} + in_batch(p,:)' * ( (w{2} * dif(p,:)')' .* out{1}(p,:) .* ( 1 - out{1}(p,:) )) ;
         end
 
+        %calculate regularisation 
+        
+        
         %update weights
-        w{1} = w{1} + miu(1) * w_d{1};
-        w{2} = w{2} + miu(2) * w_d{2};
+        w{1} = w{1} + miu(1) * ( w_d{1} - regularisation * w{1} );
+        w{2} = w{2} + miu(2) * ( w_d{2} - regularisation * w{2} ); 
 
         %update batch indexes
         if endIndex ~= trainSize
             startIndex = endIndex;
             endIndex = min(trainSize,endIndex + batchSize);
         else
-            miu(1) = miu(1) / 1.2;
-            miu(2) = miu(2) / 1.1;
+            miu = miu / 1.1;
             startIndex = 1;
             endIndex = startIndex + batchSize;
         end
@@ -103,4 +107,4 @@ for runCount = 1:10
     
 end
 
-disp(fprintf('Mean Performance: %0.2f%%\nVariance : %0.4f',mean(networkPerformance),var(networkPerformance)));
+disp(fprintf('Mean Performance: %0.2f%%\nVariance : %0.4f%%',mean(networkPerformance),var(networkPerformance)*100));
