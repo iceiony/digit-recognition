@@ -31,7 +31,7 @@ for runCount = 1:10
     batchSize = 30;
     startIndex = 1 ;
     endIndex =  startIndex + batchSize;
-    hiddenSize = 128;
+    hiddenSize = 90;
     
     w = {}; w_d={}; 
     w{1} = rand(inSize,hiddenSize) - 0.5;
@@ -65,16 +65,16 @@ for runCount = 1:10
         end
 
         %update weights
-        w{1} = w{1} + miu * w_d{1};
-        w{2} = w{2} + miu * w_d{2};
+        w{1} = w{1} + miu(1) * w_d{1};
+        w{2} = w{2} + miu(2) * w_d{2};
 
         %update batch indexes
         if endIndex ~= trainSize
             startIndex = endIndex;
             endIndex = min(trainSize,endIndex + batchSize);
         else
-            miu(1) = miu(1) / 1.1;
-            miu(2) = miu(2) / 1.2;
+            miu(1) = miu(1) / 1.2;
+            miu(2) = miu(2) / 1.1;
             startIndex = 1;
             endIndex = startIndex + batchSize;
         end
