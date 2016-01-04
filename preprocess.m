@@ -1,6 +1,7 @@
 function [inProcessed] = preprocess(in)
 %adds new features and normalizes each data image
 %a scalling is added after normalisation
+
 EXTRAS = 5;
 inProcessed = zeros(size(in,1),size(in,2) + EXTRAS );
 inProcessed(:,1:end-EXTRAS) = in;

@@ -13,9 +13,9 @@ testTarg = test(:,end);
 
 %because this is a classification transform targ into a binary output
 targ = zeros(0,10);
-for i = data(:,end)';
+for p = data(:,end)';
     targ(end+1,:) = zeros(1,10);
-    targ(end,i + 1) = 1;
+    targ(end,p + 1) = 1;
 end
 
 inSize = size(in,2);
@@ -27,14 +27,18 @@ networkPerformance = zeros(10,1);
 %run multiple for optimisation success average
 for runCount = 1:10
     
-    miu = 0.1; %learning rate
+    miu = [0.1 0.1]; %learning rate
     batchSize = 30;
     startIndex = 1 ;
     endIndex =  startIndex + batchSize;
-
-    w = rand(inSize,outSize)-0.5; %initialise the weight matrix for single layer
+    hiddenSize = 128;
     
-    entropy_cost = @(targ,out) -sum(sum(targ .* log(out)));
+    w = {}; w_d={}; 
+    w{1} = rand(inSize,hiddenSize) - 0.5;
+    w{2} = rand(hiddenSize,outSize)- 0.5; %initialise the weight matrix for single layer
+    out = {}; testOut = {};
+    
+%     entropy_cost = @(targ,out) -sum(sum(targ .* log(out)));
 %     errors = []; %error cost function for plotting 
 
     tic
@@ -43,28 +47,34 @@ for runCount = 1:10
         in_batch = in(startIndex:endIndex,:);
         targ_batch = targ(startIndex:endIndex,:);
 
-        out = softmax(in_batch,w);
+        out{1} = sigmoid(in_batch,w{1});
+        out{2} = softmax(out{1},w{2});
 
         % display entropy cost to test gradient is working
-%         cost = entropy_cost(targ_batch,out);
+%         cost = entropy_cost(targ_batch,out{2});
 %         errors(end+1)= cost;
 
-        dif = targ_batch - out ;
+        dif = targ_batch - out{2} ;
 
-        w_d = zeros(inSize,outSize);
-        for i=1:endIndex-startIndex
-            w_d = w_d + in_batch(i,:)' * dif(i,:);
+       
+        w_d{1} = zeros(inSize,hiddenSize);
+        w_d{2} = zeros(hiddenSize,outSize);
+        for p=1:endIndex-startIndex
+            w_d{2} = w_d{2} + out{1}(p,:)' * dif(p,:);
+            w_d{1} = w_d{1} + in_batch(p,:)' * ( (w{2} * dif(p,:)')' .* out{1}(p,:) .* ( 1 - out{1}(p,:) )) ;
         end
 
         %update weights
-        w = w + miu * w_d;
+        w{1} = w{1} + miu * w_d{1};
+        w{2} = w{2} + miu * w_d{2};
 
         %update batch indexes
         if endIndex ~= trainSize
             startIndex = endIndex;
             endIndex = min(trainSize,endIndex + batchSize);
         else
-            miu = miu / 1.1;
+            miu(1) = miu(1) / 1.1;
+            miu(2) = miu(2) / 1.2;
             startIndex = 1;
             endIndex = startIndex + batchSize;
         end
@@ -76,13 +86,14 @@ for runCount = 1:10
 %     disp(fprintf('Final error:%d', errors(end)));
 
     %test performance of network
-    testOut = softmax(testIn,w);
+    testOut{1} = sigmoid(testIn,w{1});
+    testOut{2} = softmax(testOut{1},w{2});
 
     correct = 0;
-    for i = 1:length(testTarg)
+    for p = 1:length(testTarg)
         %remove 1 since index starts at 1
-        result = find(testOut(i,:) == max(testOut(i,:))) - 1;
-        correct = correct + ( result == testTarg(i));
+        result = find(testOut{2}(p,:) == max(testOut{2}(p,:))) - 1;
+        correct = correct + ( result == testTarg(p));
     end
 
     networkPerformance(runCount) = correct/length(test) * 100;
