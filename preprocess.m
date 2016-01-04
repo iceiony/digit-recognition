@@ -18,11 +18,11 @@ for i = 1:length(in)
   
     covariance = cov(row,col);
     inProcessed(i,end-EXTRAS+1:end) = [
-        covariance(1,1) 
-        covariance(2,2) 
-        covariance(1,2) 
-        mean(row)
-        mean(col)
+        covariance(1,1)  * 4
+        covariance(2,2)  * 4
+        covariance(1,2)  * 2
+        mean(row) * 2
+        mean(col) * 2
         ];
 end
     
