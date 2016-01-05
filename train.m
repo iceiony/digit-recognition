@@ -3,6 +3,7 @@ close all;
 
 %load training data and pre process it for training
 data = load('optdigits.tra');
+data = addrotations(data);
 in = data(:,1:end-1);
 in = preprocess(in);
 
@@ -29,8 +30,8 @@ for runCount = 1:10
     
     regularisation = 0.001;
     miu = [0.1 0.1]; %learning rate
-    batchSize = 18;
-    hiddenSize = 90;
+    batchSize = 20;
+    hiddenSize = 60;
     
     w = {}; w_d={}; 
     w{1} = rand(inSize,hiddenSize) - 0.5;
@@ -44,7 +45,7 @@ for runCount = 1:10
 %     errors = []; %error cost function for plotting 
 
     tic
-    for epoch = 1:6000
+    for epoch = 1:28000
 
         in_batch = in(startIndex:endIndex,:);
         targ_batch = targ(startIndex:endIndex,:);
@@ -107,4 +108,4 @@ for runCount = 1:10
     
 end
 
-disp(fprintf('Mean Performance: %0.2f%%\nVariance : %0.4f%%',mean(networkPerformance),var(networkPerformance)*100));
+disp(fprintf('Mean Performance: %0.2f%%\nVariance : %0.4f%%',mean(networkPerformance),var(networkPerformance)));
