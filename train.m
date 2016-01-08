@@ -24,9 +24,11 @@ outSize = size(targ,2);
 trainSize = size(targ,1);
 
 networkPerformance = zeros(10,1);
+maxPerformance = 0;
+optimalWeights = {};
 
 %run multiple for optimisation success average
-for runCount = 1:10
+for runCount = 1:size(networkPerformance,1)
     
     regularisation = 0.001;
     miu = [0.1 0.1]; %learning rate
@@ -105,7 +107,12 @@ for runCount = 1:10
     
     disp(fprintf('Prediction success: %0.2f%%',networkPerformance(runCount)));
     
-    
+    if networkPerformance(runCount) > maxPerformance
+        optimalWeights = w;
+        maxPerformance =  networkPerformance(runCount);
+    end
 end
 
 disp(fprintf('Mean Performance: %0.2f%%\nVariance : %0.4f%%',mean(networkPerformance),var(networkPerformance)));
+
+save('optimal_weights.mat','optimalWeights','maxPerformance')
