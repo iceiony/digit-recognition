@@ -55,7 +55,7 @@ for runCount = 1:size(networkPerformance,1)
         out{1} = sigmoid(in_batch,w{1});
         out{2} = softmax(out{1},w{2});
 
-        % display entropy cost to test gradient is working
+        % collect entropy cost to test gradient is working
 %         cost = entropy_cost(targ_batch,out{2});
 %         errors(end+1)= cost;
 
@@ -68,9 +68,6 @@ for runCount = 1:size(networkPerformance,1)
             w_d{2} = w_d{2} + out{1}(p,:)' * dif(p,:);
             w_d{1} = w_d{1} + in_batch(p,:)' * ( (w{2} * dif(p,:)')' .* out{1}(p,:) .* ( 1 - out{1}(p,:) )) ;
         end
-
-        %calculate regularisation 
-        
         
         %update weights
         w{1} = w{1} + miu(1) * ( w_d{1} - regularisation * w{1} );
@@ -89,6 +86,7 @@ for runCount = 1:size(networkPerformance,1)
     end 
     toc
 
+%     display gradient cost from training 
 %     plot(1:length(errors),errors);
 %     disp(fprintf('Final error:%d', errors(end)));
 
