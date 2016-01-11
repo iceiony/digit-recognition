@@ -1,3 +1,12 @@
+load('optimal_weights.mat');
+w = optimalWeights;
+
+test = load('optdigits.tes');
+testIn = preprocess(test(:,1:end-1));
+testTarg = test(:,end);
+
+testOut{1} = sigmoid(testIn,w{1});
+testOut{2} = softmax(testOut{1},w{2});
 
 correct = 0;
 for p = 1:length(testTarg)
@@ -7,6 +16,10 @@ for p = 1:length(testTarg)
         
         imagesc(reshape(testIn(p,1:64),8,8)');
         pause(0.25);
-    end
+    else 
+        correct = correct+1;
     
+    end 
 end
+
+disp(fprintf('Network Performance %0.2f%%',correct/length(test) * 100));

@@ -113,4 +113,4 @@ end
 
 disp(fprintf('Mean Performance: %0.2f%%\nVariance : %0.4f%%',mean(networkPerformance),var(networkPerformance)));
 
-save('optimal_weights.mat','optimalWeights','maxPerformance')
+%save('optimal_weights.mat','optimalWeights','maxPerformance')
