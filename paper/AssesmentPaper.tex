@@ -83,11 +83,13 @@ When training a network, it is first initialised with random weights drawn from 
 
 The output of the hidden layer is first calculated using the sigmoid activation function on an input batch. It then gets used as input in calculating the total network output using the softmax function. These are handled, in vector notation, by \emph{sigmoid.m} and \emph{softmax.m}.
 \begin{lstlisting}
-        out{1} = sigmoid(in_batch,w{1});
-        out{2} = softmax(out{1},w{2});
+out{1} = [ones(size(batch,1),1) sigmoid(batch,w{1})];
+out{2} = softmax(out{1},w{2});
 \end{lstlisting}
 
 The delta of each weight update is calculated using the first derivative of the cost function for each layer (following course formulas). The weight are updated by a proportion of the delta and also suffer a weight decay proportional to their current value. 
+
+The bias unit is added to each layer input (i.e. training set input and hidden layer output). In calculating the weight delta, the value is removed whilst propagating errors back through the network. 
 
 \subsection{Testing}
 
@@ -185,7 +187,7 @@ Surprisingly, a single layer network was able to achieve a significantly high ge
 
 The next most significant improvement was adding a hidden layer to the network. The average performance improved by another 1\% at the cost of a small increase in standard deviation (to 0.1\%).
 
-With most implementation and design changes, the epoch and batch size had to be readjusted. This was especially true after adding input normalisation and input rotation. Altough improvements were not significant, these changes helped break the performance barrier to an ever high of 97.2\%. Variably rotating training data in order to create additional sets proved to make optimisation more difficult. 
+With most implementation and design changes, the epoch and batch size had to be readjusted. This was especially true after adding input normalisation and input rotation. Altough improvements were not significant, these changes helped break the performance barrier to an ever high of 97.27\%. Variably rotating training data in order to create additional sets proved to make optimisation more difficult. 
 
 \begin{thebibliography}{9}
 \bibitem{ucidigits}

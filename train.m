@@ -5,11 +5,11 @@ close all;
 data = load('optdigits.tra');
 data = addrotations(data);
 in = data(:,1:end-1);
-in = preprocess(in);
+in = [ones(length(in),1) preprocess(in)];
 
 %load test data and preprocess it for later testing
 test = load('optdigits.tes');
-testIn = preprocess(test(:,1:end-1));
+testIn = [ones(length(test),1) preprocess(test(:,1:end-1))];
 testTarg = test(:,end);
 
 %because this is a classification transform targ into a binary output
@@ -37,11 +37,11 @@ for runCount = 1:size(networkPerformance,1)
     
     w = {}; w_d={}; 
     w{1} = rand(inSize,hiddenSize) - 0.5;
-    w{2} = rand(hiddenSize,outSize)- 0.5; %initialise the weight matrix for single layer
+    w{2} = rand(hiddenSize+1,outSize)- 0.5; %initialise the weight matrix for single layer
     out = {}; testOut = {};
     
     startIndex = 1 ;
-    endIndex =  startIndex + batchSize;
+    endIndex = batchSize;
     
 %     entropy_cost = @(targ,out) -sum(sum(targ .* log(out)));
 %     errors = []; %error cost function for plotting 
@@ -52,7 +52,7 @@ for runCount = 1:size(networkPerformance,1)
         in_batch = in(startIndex:endIndex,:);
         targ_batch = targ(startIndex:endIndex,:);
 
-        out{1} = sigmoid(in_batch,w{1});
+        out{1} = [ones(size(in_batch,1),1) sigmoid(in_batch,w{1})];
         out{2} = softmax(out{1},w{2});
 
         % collect entropy cost to test gradient is working
@@ -61,12 +61,12 @@ for runCount = 1:size(networkPerformance,1)
 
         dif = targ_batch - out{2} ;
 
-       
         w_d{1} = zeros(inSize,hiddenSize);
-        w_d{2} = zeros(hiddenSize,outSize);
+        w_d{2} = zeros(hiddenSize+1,outSize);
         for p=1:endIndex-startIndex
             w_d{2} = w_d{2} + out{1}(p,:)' * dif(p,:);
-            w_d{1} = w_d{1} + in_batch(p,:)' * ( (w{2} * dif(p,:)')' .* out{1}(p,:) .* ( 1 - out{1}(p,:) )) ;
+            hidd_dif = (w{2} * dif(p,:)')' .* out{1}(p,:) .* ( 1 - out{1}(p,:) );
+            w_d{1} = w_d{1} + in_batch(p,:)' * hidd_dif(2:end);
         end
         
         %update weights
@@ -75,12 +75,12 @@ for runCount = 1:size(networkPerformance,1)
 
         %update batch indexes
         if endIndex ~= trainSize
-            startIndex = endIndex;
+            startIndex = endIndex + 1;
             endIndex = min(trainSize,endIndex + batchSize);
         else
             miu = miu / 1.1;
             startIndex = 1;
-            endIndex = startIndex + batchSize;
+            endIndex = batchSize;
         end
 
     end 
@@ -91,7 +91,7 @@ for runCount = 1:size(networkPerformance,1)
 %     disp(fprintf('Final error:%d', errors(end)));
 
     %test performance of network
-    testOut{1} = sigmoid(testIn,w{1});
+    testOut{1} = [ones(length(testIn),1) sigmoid(testIn,w{1})];
     testOut{2} = softmax(testOut{1},w{2});
 
     correct = 0;
