@@ -32,7 +32,7 @@ for runCount = 1:size(networkPerformance,1)
     
     regularisation = 0.001;
     miu = [0.1 0.1]; %learning rate
-    batchSize = 18;
+    batchSize = 19;
     hiddenSize = 90;
     
     w = {}; w_d={}; 
@@ -47,7 +47,7 @@ for runCount = 1:size(networkPerformance,1)
 %     errors = []; %error cost function for plotting 
 
     tic
-    for epoch = 1:22000
+    for epoch = 1:20000
 
         in_batch = in(startIndex:endIndex,:);
         targ_batch = targ(startIndex:endIndex,:);
