@@ -47,7 +47,7 @@ for runCount = 1:size(networkPerformance,1)
 %     errors = []; %error cost function for plotting 
 
     tic
-    for epoch = 1:19000
+    for epoch = 1:22000
 
         in_batch = in(startIndex:endIndex,:);
         targ_batch = targ(startIndex:endIndex,:);
