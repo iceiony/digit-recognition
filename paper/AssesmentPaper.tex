@@ -104,9 +104,9 @@ In order to establish a baseline of performance the network was initially built 
 
 For the initial training no preprocessing was done on the data set. Because of using the softmax activation function, a batch size larger than 20 or a learning rate larger than 0.01 could not be used as the the function would overflow double precision data types.
 
-\begin{figure}[h]
+\begin{figure}
 \centering
-\includegraphics[width=0.7\textwidth]{learning_rate.png}
+\includegraphics[width=0.9\textwidth]{learning_rate.png}
 \caption{Adjusting learning rate $\mu$}
 \label{fig:learningrate}
 \end{figure}
@@ -116,9 +116,9 @@ With the initial batch=20, epoch=2000 and $\mu=0.01$, the network achieved an av
 \subsubsection{Batch and Epoch Sizes}
 Whilst a varying learning rate increase performance significantly, batch and epoch sizes were also experimented with (fig. \ref{fig:batchandepoch}). A low epoch size would underfit general training performance, whilst a low batch size would produce a less stable gradient descent. No further performance improvements were achieved when modifying these parameters. 
 
-\begin{figure}[h]
+\begin{figure}
 \centering
-\includegraphics[width=0.7\textwidth]{batchandepoch.png}
+\includegraphics[width=0.9\textwidth]{batchandepoch.png}
 \caption{Adjusting the batch and epoch sizes}
 \label{fig:batchandepoch}
 \end{figure}
@@ -128,10 +128,10 @@ To further increase performance, preprocessing was done to both the training and
 
 The technique improved average network performance to a mean of 95.11\%($\pm 0.01\%$) (fig. \ref{fig:normalised}). By normalising the data, the network could be trained with larger batch sizes and learning rates without number overflows. However, increasing these values did not further improve performance. 
 
-\begin{figure}[h]
+\begin{figure}
 \centering
-\includegraphics[width=0.7\textwidth]{normalised.png}
-\caption{Adjusting the learning rate}
+\includegraphics[width=0.9\textwidth]{normalised.png}
+\caption{Preprocessing}
 \label{fig:normalised}
 \end{figure}
 
@@ -142,9 +142,9 @@ To understand what types of digits the network failed to predict, some of the te
 \subsubsection{Hidden Unit Count}
 
 An attempt at predicting rotated digits was to add a hidden layer to the network. The network could now be optimised in the number of hidden units. Other parameters of such as the batch size and epoch count required readjusting. The below graph (fig. \ref{fig:hiddenunits}) shows improved overall average performance for a batch size of 30 and epoch count of 5000.  Mean network performance in this case reached 96.2\%($\pm 0.1\%$) for a 90 units hidden layer. 
-\begin{figure}[h]
+\begin{figure}
 \centering
-\includegraphics[width=0.6\textwidth]{hiddenunits.png}
+\includegraphics[width=0.9\textwidth]{hiddenunits.png}
 \caption{Adjusting the number of hidden units}
 \label{fig:hiddenunits}
 \end{figure}
@@ -154,9 +154,9 @@ A simple improvement that can raise generalisation is regularisation through wei
 
 Regularisation was implemented by adding or subtracting from a weight a ratio of its current value. Decay ratio can be seen as another parameter that can be optimised. Experimentally the best performance achieved with weight decay had a performance of 96.45\%($\pm 0.06\%$) (fig. \ref{fig:regularisation}).  Although the overall  improvement was not significant the change lead to a smaller standard deviation in training. All other parameters remained with previous values ( i.e. batch size 30, hidden units 90,epoch size 90, variable learning rate).
 
-\begin{figure}[h]
+\begin{figure}
 \centering
-\includegraphics[width=0.7\textwidth]{regularisation.png}
+\includegraphics[width=0.9\textwidth]{regularisation.png}
 \caption{Adjusting decay ratio}
 \label{fig:regularisation}
 \end{figure}
@@ -164,9 +164,9 @@ Regularisation was implemented by adding or subtracting from a weight a ratio of
 \subsection{Digit Rotations}
 As most prediction failures in the testing set were rotated digits, it was necessary to create additional examples of rotations in order to further improve performance. Adding rotations tripled the training set and required adjusting the batch size, epoch count and number of hidden units. The below figure \ref{fig:rotations} demonstrates the effects of adjusting each such parameters. Even though prediction performance was higher, the optimising parameters became more difficult. 
 
-\begin{figure}[h]
+\begin{figure}
 \centering
-\includegraphics[width=0.8\textwidth]{rotations.png}
+\includegraphics[width=0.9\textwidth]{rotations.png}
 \caption{Adjusting parameters after rotation with decay 0.0001}
 \label{fig:rotations}
 \end{figure}
@@ -175,9 +175,9 @@ After increasing the weight decay ratio from 0.0001 to 0.001 performance slightl
 
 However, through this method the best achieved performance was 97.21\%. The best obtained weights can be loaded and tested against the training set by running \emph{showdigits.m}. The script also shows the digits that failed recognition. 
 
-\begin{figure}[h]
+\begin{figure}
 \centering
-\includegraphics[width=0.6\textwidth]{rotations2.png}
+\includegraphics[width=0.9\textwidth]{rotations2.png}
 \caption{Adjusting decay 0.001, batch size 20 , hidden 90}
 \label{fig:rotations2}
 \end{figure}
@@ -188,11 +188,5 @@ Surprisingly, a single layer network was able to achieve a significantly high ge
 The next most significant improvement was adding a hidden layer to the network. The average performance improved by another 1\% at the cost of a small increase in standard deviation (to 0.1\%).
 
 With most implementation and design changes, the epoch and batch size had to be readjusted. This was especially true after adding input normalisation and input rotation. Altough improvements were not significant, these changes helped break the performance barrier to an ever high of 97.27\%. Variably rotating training data in order to create additional sets proved to make optimisation more difficult. 
-
-\begin{thebibliography}{9}
-\bibitem{ucidigits}
-UCI machine learning repository: Optical recognition of handwritten digits data set. (1998, July 1). Retrieved January 10, 2016, from http://archive.ics.uci.edu/ml/datasets/Optical+Recognition+of+Handwritten+Digits
-
-\end{thebibliography}
 
 \end{document}
